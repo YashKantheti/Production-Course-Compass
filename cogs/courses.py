@@ -3,6 +3,8 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from utils import ai_client
+import re
+import textwrap
 
 
 # create the choices for academic level option
@@ -11,6 +13,7 @@ LEVEL_CHOICES = [
     app_commands.Choice(name="Sophomore", value="sophomore"),
     app_commands.Choice(name="Junior", value="junior"),
     app_commands.Choice(name="Senior", value="senior"),
+    app_commands.Choice(name="Graduate", value="graduate"),
 ]
 
 # constant values for output colors
@@ -54,7 +57,7 @@ class CoursesCog(commands.Cog):
         level: app_commands.Choice[str]
     ):
         await interaction.response.defer(thinking=True)
-        #utilizing the AI Client to get reccomendations
+        #utilizing the AI Client to get reccomendations output to create output for the user
         try:
             result = await ai_client.get_course_recommendations(interests, level.value)
         except Exception as e:
@@ -100,13 +103,13 @@ def _format_recommendation_payload(raw: str) -> tuple[str, str]:
     notes = _notes_block(raw)
     return rows, notes
 
-# helper function for the fromat that cleans the course title
+# helper function for the fromat that cleans the course title and sends back to the formatting function
 def _clean_course_title(title: str) -> str:
     title = re.sub(r"^[-:]+", "", title).strip()
     title = re.sub(r"\s+", " ", title)
     return title
 
-# helper function to ge the course reccomendations from the AI output
+# helper function to extract the course reccomendations from the AI output to be used in the formatting function
 def _extract_course_picks(raw: str) -> list[tuple[str, str]]:
     picks: list[tuple[str, str]] = []
     seen: set[str] = set()
@@ -125,13 +128,13 @@ def _extract_course_picks(raw: str) -> list[tuple[str, str]]:
         picks.append((code, title))
     return picks
 
-# helper function to make labels for the courses to tell the user what course the class is for
+# helper function to make labels for the courses to tell the user what course the class is for (elective, core, or support)
 def _course_fit_label(code: str) -> str:
     code = code.upper()
     core = {"CS 1114", "CS 2114", "CS 2505", "CS 2506", "CS 3114", "CS 3214"}
     if code in core:
         return "Core"
-    if code.startswith("MATH") or code.startswith("ENGL"):
+    if code.startswith("MATH"):
         return "Support"
     return "Elective"
 
