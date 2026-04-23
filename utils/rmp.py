@@ -86,7 +86,9 @@ async def search_professor(name: str, school_id: int = VT_SCHOOL_ID) -> Professo
         data.get("data", {})  # get the data 
             .get("search", {})  # get the search 
             .get("teachers", {})  # get the teacher
-            .get("results", [])  # get the results list
+            .get("edges", [])  # get the edges 
+            #there was a previous error here with results because the GraphQL stores the teacher 
+            #results inside of teachers -> edges not a results list 
     )
 
     if not edges:  # if nothing is found, return nothing
