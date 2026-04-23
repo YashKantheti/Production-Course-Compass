@@ -47,8 +47,18 @@ class ProfessorsCog(commands.Cog):
         try:
             prof = await search_professor(name)  # professor lookup on RMP
         except Exception as e:
+            NOTE: CODE ADDDED (ephemeral=True on RMP unreachable)
             await interaction.followup.send(  # error message if RMP unreachable
-                embed=error_embed(f"Error:Could not reach Rate My Professor: {e}"),
+                embed=error_embed(f"Could not reach Rate My Professor: {e}"),
+                ephemeral=True,
+            )
+            return
+
+        NOTE: CODE ADDDED (not-found handling)
+        if prof is None:  # if no professor found on RMP
+            await interaction.followup.send(
+                embed=not_found_embed(name),
+                ephemeral=True,
             )
             return
 
@@ -114,6 +124,20 @@ def build_professor_embed(prof: ProfessorResult) -> discord.Embed:
 # creates embed for general errors
 def error_embed(message: str) -> discord.Embed:
     return discord.Embed(title="Error", description=message, color=discord.Color.red())  # red embed with the error message
+
+
+NOTE: CODE ADDED
+# this makes an embed for when we can't find the professor
+def not_found_embed(name: str) -> discord.Embed:
+    return discord.Embed(  # create error embed
+        title=f"Professor not found: {name}",
+        description=(
+            "No results on Rate My Professor for this name at Virginia Tech.\n"
+            "Try their full name, e.g. `/professor name Godmar Back`."
+        ),
+        color=discord.Color.red(),
+    )
+
 
 #AI USAGE NOTE: this function was created with the help of AI.
 # adds the cog to the bot when the extension is loaded
