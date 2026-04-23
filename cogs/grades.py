@@ -85,7 +85,7 @@ class GradesCog(commands.Cog):
             embed.add_field(name="By Instructor", value=instructor_table(course_insights), inline=False)
 
         #Attaches the chart image to the embed.
-        embed.set_image(url="attachment://grade.png")
+        embed.set_image(url="attachment://grades.png")
         #Adds footer text to show the source information and semester.
         embed.set_footer(text=f"Source: VT DataCommons | {semester}")
         #AI was used to write this, but it essentially sends the embed and chart to Discord.
@@ -101,7 +101,7 @@ class GradesCog(commands.Cog):
         #Converts the input to uppercase.
         current_input_upper = current.upper()
         #Finds matches and the max is 25 for Discord.
-        matches = [c for c in codes if c in current_input_upper in c][:25]
+        matches = [c for c in codes if current_input_upper in c][:25]
         #Returns the choices to Discord.
         return [app_commands.Choice(name=c, value=c) for c in matches]
 
