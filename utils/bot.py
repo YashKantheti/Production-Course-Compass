@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # cog files that should load in
-COGS = ["cogs.courses", "cogs.grades", "cogs.professors"]
+COGS = ["cogs.courses", "cogs.grades", "cogs.professors", "cogs.career"]
 
 
 class CourseCompassBot(commands.Bot):
