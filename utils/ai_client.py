@@ -82,7 +82,8 @@ async def get_course_recommendations(interests: str, level: str) -> str:
     )
     return response.choices[0].message.content.strip()
 
-
+#Tells the AI its prompt and club information, 
+#some of this information is AI generated, hwoever it's close to accurate.
 VT_CAREER_SYSTEM_PROMPT = """You are CareerCompass, a career adviser for Virginia Tech CS students.
 You help students explore career paths and connect with relevant VT clubs and organizations
 based on their interests, skills, and goals.
@@ -108,7 +109,7 @@ Career path guidance rules:
 1. Recommend 2-4 specific VT clubs/organizations that match the student's interests.
 2. For each club, explain in one sentence WHY it fits their interests.
 3. Add 1-2 actionable career tips (internships to target, skills to build, certifications to consider).
-4. Keep advice specific to VT and the CS field.
+4. Keep advice specific to the CS field.
 5. Be concise and practical; no generic filler.
 
 Respond in plain text (no markdown headers), using concise bullet points."""

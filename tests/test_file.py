@@ -70,6 +70,9 @@ async def test_rmp_wrong_graphql_parsing(monkeypatch):
         async def __aexit__(self, *args): return False
 
     class FakeSession:
+        def __init__(self, *args, **kwargs):
+            pass
+
         async def __aenter__(self): return self
         async def __aexit__(self, *args): return False
         def post(self, *args, **kwargs): return FakeResponse()

@@ -113,4 +113,4 @@ def grade_bar(course_code, grade_data, semester="") -> discord.File:
    fig.savefig(buf, format="png", facecolor=BACK_COLOR)
    plt.close(fig)
    buf.seek(0)
-   return discord.File(buf, filename="grades.png")
+   return discord.File(buf, filename="grade.png")
