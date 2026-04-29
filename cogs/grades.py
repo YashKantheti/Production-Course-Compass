@@ -2,6 +2,7 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
+import inspect
 
 #Gets the data and charts.
 from utils import vt_data, charts
@@ -218,6 +219,13 @@ def bar_line(label: str, pct: float) -> str:
     #Creates the bar.
     return f"{label:<3} | {'#' * units}{'-' * (20 - units)} | {pct:>5.1f}%"
 
+#This was AI generated. 
+def autocomplete_course(current: str) -> list[str]:
+    """Return up to 25 matching course codes for local filtering/tests."""
+    codes = vt_data.get_course_codes()
+    current_input_upper = current.upper()
+    return [c for c in codes if current_input_upper in c][:25]
+
 #Helper function for the overview line.
 def overview_line(grade_data: dict, course_insights: dict | None) -> str:
     #A rate.
@@ -296,7 +304,9 @@ def not_found_embed(course: str, hint: str = "") -> discord.Embed:
 async def safe_defer(interaction: discord.Interaction) -> bool:
     """Defer safely; return False if the interaction is already invalid/expired."""
     try:
-        await interaction.response.defer(thinking=True)
+        result = interaction.response.defer(thinking=True)
+        if inspect.isawaitable(result):
+            await result
         return True
     except discord.NotFound:
         #The interaction expired.
