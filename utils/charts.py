@@ -36,7 +36,7 @@ GRADE_COLORS = {
 
 
 # creates a bar chart for one course grade distr.
-def grade_bar(course_code, grade_data, semester="") -> discord.File:
+def generate_grade_bar(course_code, grade_data, semester="") -> discord.File:
    # the order of grades to display
    grade_order = ["A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D+", "D", "D-", "F", "W"]
 
@@ -113,4 +113,67 @@ def grade_bar(course_code, grade_data, semester="") -> discord.File:
    fig.savefig(buf, format="png", facecolor=BACK_COLOR)
    plt.close(fig)
    buf.seek(0)
-   return discord.File(buf, filename="grade.png")
+   return discord.File(buf, filename="grades.png")
+
+
+# creates a side-by-side bar chart comparing grade distributions of two courses.
+# AI (Claude) wrote was used in part to this function, it was used for formmating the png. 
+def generate_compare_bar(course1, data1, course2, data2, sem1="", sem2="") -> discord.File:
+   grade_order = ["A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D+", "D", "D-", "F", "W"]
+
+   labels, vals1, vals2 = [], [], []
+   for g in grade_order:
+       if g in data1 or g in data2:
+           labels.append(g)
+           vals1.append(data1.get(g, 0))
+           vals2.append(data2.get(g, 0))
+
+   import numpy as np
+   x = np.arange(len(labels))
+   width = 0.38
+
+   fig, ax = plt.subplots(figsize=(11, 4.8))
+   fig.patch.set_facecolor(BACK_COLOR)
+   ax.set_facecolor(PLOT_BACK)
+
+   bars1 = ax.bar(x - width / 2, vals1, width, color=BAR_COLOR, zorder=2, label=course1.upper())
+   bars2 = ax.bar(x + width / 2, vals2, width, color=BAR_COLOR_2, zorder=2, label=course2.upper())
+
+   for bars, vals in ((bars1, vals1), (bars2, vals2)):
+       for bar, val in zip(bars, vals):
+           if val >= 2.0:
+               ax.text(
+                   bar.get_x() + bar.get_width() / 2,
+                   bar.get_height() + 0.5,
+                   f"{val:.0f}%",
+                   ha="center", va="bottom",
+                   color=TEXT_COLOR, fontsize=7.5, fontweight="bold"
+               )
+
+   ax.set_xticks(x)
+   ax.set_xticklabels(labels)
+   ax.tick_params(colors=TEXT_COLOR)
+   ax.xaxis.label.set_color(TEXT_COLOR)
+   ax.yaxis.label.set_color(TEXT_COLOR)
+   ax.title.set_color(TEXT_COLOR)
+   ax.yaxis.grid(True, color=GRID_COLOR, linewidth=0.7, alpha=0.5)
+   ax.set_axisbelow(True)
+   for spine in ax.spines.values():
+       spine.set_edgecolor(GRID_COLOR)
+
+   ax.legend(facecolor=PLOT_BACK, edgecolor=GRID_COLOR, labelcolor=TEXT_COLOR)
+
+   label1 = course1.upper() + (f" ({sem1})" if sem1 else "")
+   label2 = course2.upper() + (f" ({sem2})" if sem2 else "")
+   title = f"Grade Comparison | {label1} vs {label2}"
+   ax.set_title(title, fontsize=13, fontweight="bold")
+   ax.set_xlabel("Grade", fontsize=11)
+   ax.set_ylabel("Students (%)", fontsize=11)
+
+   plt.tight_layout(pad=1.2)
+
+   buf = io.BytesIO()
+   fig.savefig(buf, format="png", facecolor=BACK_COLOR)
+   plt.close(fig)
+   buf.seek(0)
+   return discord.File(buf, filename="compare.png")
