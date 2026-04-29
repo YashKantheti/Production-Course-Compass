@@ -48,17 +48,16 @@ Advising style rules:
 
 Respond in plain text (no markdown headers), using concise bullet points."""
 
-#This function allows the AI to be used with a GitHub token. 
-#AI was used to help figure out how to use the GitHub token for the AI. 
+#This function allows the AI to be used with an OpenRouter API key.
 def get_client() -> AsyncOpenAI:
     global _client
     if _client is None:
-        token = os.environ.get("GITHUB_TOKEN")
+        token = os.environ.get("OPENROUTER_API_KEY")
         if not token:
-            raise RuntimeError("GITHUB_TOKEN is not set in your .env file.")
+            raise RuntimeError("OPENROUTER_API_KEY is not set in your .env file.")
         _client = AsyncOpenAI(
             api_key=token,
-            base_url="https://models.github.ai/inference",
+            base_url="https://openrouter.ai/api/v1",
         )
     return _client
 

@@ -1,5 +1,9 @@
 import os
 import sys
+
+# ensure project root is on sys.path so `cogs.*` imports resolve correctly
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
